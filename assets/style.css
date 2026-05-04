@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+/* ── Base ─────────────────────────────────────────────── */
+body {
+  background-color: #0f0f0f !important;
+  color: #e0e0e0 !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Navbar ───────────────────────────────────────────── */
+.main-navbar {
+  background-color: #141414 !important;
+  border-bottom: 1px solid #2a2a2a;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
+.main-navbar .nav-link {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #888 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.main-navbar .nav-link:hover {
+  color: #fff !important;
+  background-color: #1f1f1f;
+}
+
+.main-navbar .nav-link.active {
+  color: #fff !important;
+  background-color: #1f1f1f;
+}
+
+/* ── Page ─────────────────────────────────────────────── */
+.page-content {
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  border-left: 4px solid #e10600;
+  padding-left: 12px;
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* ── Stat cards ───────────────────────────────────────── */
+.stat-card {
+  background-color: #1a1a1a !important;
+  border: 1px solid #242424 !important;
+  border-radius: 10px !important;
+  height: 100%;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.stat-subtitle {
+  font-size: 0.8rem;
+  color: #666 !important;
+  margin-bottom: 0;
+}
+
+/* ── Chart cards ──────────────────────────────────────── */
+.chart-card {
+  background-color: #1a1a1a !important;
+  border: 1px solid #242424 !important;
+  border-radius: 10px !important;
+}
+
+/* ── Tables ───────────────────────────────────────────── */
+.standings-table {
+  color: #e0e0e0 !important;
+  font-size: 0.88rem;
+  margin-bottom: 0;
+}
+
+.standings-table thead th {
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  color: #555 !important;
+  text-transform: uppercase;
+  border-bottom: 1px solid #2a2a2a !important;
+  border-top: none !important;
+  padding: 10px 14px !important;
+  background-color: transparent !important;
+}
+
+.standings-table tbody td {
+  border-color: #1e1e1e !important;
+  padding: 10px 14px !important;
+  vertical-align: middle;
+  background-color: transparent !important;
+}
+
+.standings-table tbody tr:hover td {
+  background-color: #212121 !important;
+}
+
+/* ── Team colour dot ──────────────────────────────────── */
+.team-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ── H2H components ───────────────────────────────────── */
+.h2h-card {
+  background-color: #1a1a1a !important;
+  border: 1px solid #242424 !important;
+  border-radius: 10px !important;
+  height: 100%;
+}
+
+.driver-code {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.h2h-score {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.h2h-bar-wrap {
+  display: flex;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 8px 0 4px;
+  background-color: #2a2a2a;
+}
+
+/* ── Dash Dropdown dark override ──────────────────────── */
+.Select-control {
+  background-color: #1a1a1a !important;
+  border-color: #2a2a2a !important;
+  color: #e0e0e0 !important;
+}
+
+.Select-menu-outer {
+  background-color: #1a1a1a !important;
+  border-color: #2a2a2a !important;
+}
+
+.Select-option {
+  background-color: #1a1a1a !important;
+  color: #e0e0e0 !important;
+}
+
+.Select-option:hover,
+.Select-option.is-focused {
+  background-color: #242424 !important;
+}
+
+.Select-value-label {
+  color: #e0e0e0 !important;
+}
+
+.Select-placeholder {
+  color: #555 !important;
+}
+
+.Select-arrow {
+  border-top-color: #555 !important;
+}
+
+/* ── Radio items ──────────────────────────────────────── */
+.form-check-input:checked {
+  background-color: #e10600 !important;
+  border-color: #e10600 !important;
+}
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track { background: #141414; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
