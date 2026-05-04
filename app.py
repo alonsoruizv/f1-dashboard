@@ -50,7 +50,7 @@ footer = html.Footer(
                 dbc.Col(
                     html.A(
                         "Alonso Ruiz Velasco",
-                        href="https://www.linkedin.com/in/YOUR_LINKEDIN_HANDLE",
+                        href="https://www.linkedin.com/in/alonsoruizv/",
                         target="_blank",
                         style={"color": "#888", "fontSize": "0.8rem", "textDecoration": "none"},
                     ),
