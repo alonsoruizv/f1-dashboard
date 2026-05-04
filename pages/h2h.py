@@ -137,7 +137,7 @@ def _quali_chart(
     d2_q: dict,
     team_color: str,
 ) -> go.Figure:
-    rounds = sorted(set(d1_q) & set(d2_q))
+    rounds = sorted(set(d1_q) | set(d2_q))
     if not rounds:
         return None
 
