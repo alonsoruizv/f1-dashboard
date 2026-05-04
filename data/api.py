@@ -204,3 +204,44 @@ def get_driver_team_colors() -> dict[str, str]:
         row["code"]: TEAM_COLORS.get(row["team"], "#888888")
         for _, row in df.iterrows()
     }
+
+
+def _driver_wiki_urls() -> dict[str, str]:
+    """Returns {driver_code: wikipedia_page_title} for the current season."""
+    try:
+        data = _fetch(f"{BASE_URL}/{SEASON}/drivers.json")
+        drivers = data["MRData"]["DriverTable"]["Drivers"]
+        return {
+            d["code"]: d["url"].split("/wiki/")[-1]
+            for d in drivers
+            if d.get("url")
+        }
+    except Exception:
+        return {}
+
+
+def get_driver_headshot(code: str) -> str | None:
+    """Returns a Wikipedia thumbnail URL for the given driver code, or None."""
+    wiki_urls = _driver_wiki_urls()
+    title = wiki_urls.get(code)
+    if not title:
+        return None
+
+    cache_key = f"wp_{title}"
+    now = time.time()
+    if cache_key in _cache and now - _cache[cache_key]["ts"] < 86400:
+        return _cache[cache_key]["data"]
+
+    try:
+        resp = requests.get(
+            f"https://en.wikipedia.org/api/rest_v1/page/summary/{title}",
+            timeout=8,
+            headers={"User-Agent": "F1Dashboard/1.0"},
+        )
+        if resp.status_code == 200:
+            url = resp.json().get("thumbnail", {}).get("source")
+            _cache[cache_key] = {"data": url, "ts": now}
+            return url
+    except Exception:
+        pass
+    return None

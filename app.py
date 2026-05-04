@@ -24,8 +24,8 @@ navbar = dbc.Navbar(
             ),
             dbc.Nav(
                 [
-                    dbc.NavItem(dbc.NavLink("Season", href="/", active="exact")),
-                    dbc.NavItem(dbc.NavLink("Standings", href="/standings", active="exact")),
+                    dbc.NavItem(dbc.NavLink("Home", href="/", active="exact")),
+                    dbc.NavItem(dbc.NavLink("Standings Trend", href="/standings", active="exact")),
                     dbc.NavItem(dbc.NavLink("H2H", href="/h2h", active="exact")),
                 ],
                 navbar=True,

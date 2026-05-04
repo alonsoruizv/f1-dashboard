@@ -6,6 +6,7 @@ from dash import Input, Output, callback, dcc, html
 from data.api import (
     CHART_THEME,
     TEAM_COLORS,
+    get_driver_headshot,
     get_qualifying_results,
     get_race_results,
     get_teams_with_drivers,
@@ -287,6 +288,39 @@ def update_h2h(team: str):
     d1_avg_inv = int(d2_avg * 10)
     d2_avg_inv = int(d1_avg * 10)
 
+    # ── Headshots
+    img1 = get_driver_headshot(d1)
+    img2 = get_driver_headshot(d2)
+
+    def _driver_photo(code: str, img_url: str | None, color: str) -> html.Div:
+        photo = (
+            html.Img(
+                src=img_url,
+                style={
+                    "width": "90px",
+                    "height": "90px",
+                    "objectFit": "cover",
+                    "objectPosition": "top",
+                    "borderRadius": "50%",
+                    "border": f"3px solid {color}",
+                },
+            )
+            if img_url
+            else html.Div(
+                style={
+                    "width": "90px",
+                    "height": "90px",
+                    "borderRadius": "50%",
+                    "backgroundColor": "#2a2a2a",
+                    "border": f"3px solid {color}",
+                }
+            )
+        )
+        return html.Div(
+            [photo, html.Div(code, className="driver-code mt-2", style={"color": color})],
+            style={"textAlign": "center"},
+        )
+
     # ── Build charts
     race_fig = _positions_chart(d1, d2, d1_pos, d2_pos, team_color)
     quali_fig = _quali_chart(d1, d2, d1_q, d2_q, team_color)
@@ -325,6 +359,22 @@ def update_h2h(team: str):
 
     return html.Div(
         [
+            # ── Driver photos banner
+            dbc.Row(
+                [
+                    dbc.Col(_driver_photo(d1, img1, team_color), width="auto"),
+                    dbc.Col(
+                        html.Div(
+                            "vs",
+                            style={"color": "#444", "fontSize": "1.2rem", "fontWeight": "700", "paddingTop": "28px"},
+                        ),
+                        width="auto",
+                    ),
+                    dbc.Col(_driver_photo(d2, img2, team_color), width="auto"),
+                ],
+                align="center",
+                className="mb-4 g-3",
+            ),
             # ── Stat summary cards
             dbc.Row(
                 [
