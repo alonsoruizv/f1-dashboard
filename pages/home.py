@@ -10,7 +10,7 @@ from data.api import (
     get_schedule,
 )
 
-dash.register_page(__name__, path="/", name="Season")
+dash.register_page(__name__, path="/", name="Home")
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -35,6 +35,7 @@ def driver_table(df: pd.DataFrame) -> html.Div:
     if df.empty:
         return html.P("No data available.", className="text-muted small")
 
+    leader_pts = df.iloc[0]["points"]
     rows = [
         html.Tr(
             [
@@ -51,6 +52,10 @@ def driver_table(df: pd.DataFrame) -> html.Div:
                 html.Td(
                     html.Strong(int(row["points"])),
                     style={"color": "#fff", "textAlign": "right"},
+                ),
+                html.Td(
+                    "—" if row["pos"] == 1 else f"-{int(leader_pts - row['points'])}",
+                    style={"color": "#555", "textAlign": "right", "fontSize": "0.82rem"},
                 ),
                 html.Td(
                     row["wins"],
@@ -70,6 +75,7 @@ def driver_table(df: pd.DataFrame) -> html.Div:
                         html.Th("Driver"),
                         html.Th("Team", className="d-none d-lg-table-cell"),
                         html.Th("PTS", style={"textAlign": "right"}),
+                        html.Th("GAP", style={"textAlign": "right"}),
                         html.Th("W", style={"textAlign": "right"}),
                     ]
                 )
@@ -86,6 +92,7 @@ def constructor_table(df: pd.DataFrame) -> html.Div:
     if df.empty:
         return html.P("No data available.", className="text-muted small")
 
+    leader_pts = df.iloc[0]["points"]
     rows = [
         html.Tr(
             [
@@ -94,6 +101,10 @@ def constructor_table(df: pd.DataFrame) -> html.Div:
                 html.Td(
                     html.Strong(int(row["points"])),
                     style={"color": "#fff", "textAlign": "right"},
+                ),
+                html.Td(
+                    "—" if row["pos"] == 1 else f"-{int(leader_pts - row['points'])}",
+                    style={"color": "#555", "textAlign": "right", "fontSize": "0.82rem"},
                 ),
                 html.Td(row["wins"], style={"color": "#888", "textAlign": "right"}),
             ]
@@ -109,6 +120,7 @@ def constructor_table(df: pd.DataFrame) -> html.Div:
                         html.Th(""),
                         html.Th("Constructor"),
                         html.Th("PTS", style={"textAlign": "right"}),
+                        html.Th("GAP", style={"textAlign": "right"}),
                         html.Th("W", style={"textAlign": "right"}),
                     ]
                 )
@@ -148,10 +160,11 @@ def layout():
     # Races card
     if not schedule.empty:
         today = pd.Timestamp.now().normalize()
-        done = (schedule["date"] <= today).sum()
+        done = int((schedule["date"] <= today).sum())
         total = len(schedule)
+        pct = round(done / total * 100) if total else 0
         races_val = f"{done} / {total}"
-        races_sub = "rounds completed"
+        races_sub = f"{pct}% of season complete"
     else:
         races_val, races_sub = "—", ""
 

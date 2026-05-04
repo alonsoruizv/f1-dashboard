@@ -12,7 +12,7 @@ from data.api import (
     get_standings_progression,
 )
 
-dash.register_page(__name__, path="/standings", name="Standings")
+dash.register_page(__name__, path="/standings", name="Standings Trend")
 
 
 def layout():

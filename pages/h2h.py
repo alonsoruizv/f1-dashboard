@@ -6,6 +6,7 @@ from dash import Input, Output, callback, dcc, html
 from data.api import (
     CHART_THEME,
     TEAM_COLORS,
+    get_driver_headshot,
     get_qualifying_results,
     get_race_results,
     get_teams_with_drivers,
@@ -21,18 +22,26 @@ def _h2h_stat_card(
     label: str,
     d1: str,
     d2: str,
-    val1: int,
-    val2: int,
+    val1: int | float,
+    val2: int | float,
     team_color: str,
+    display_val1: str | None = None,
+    display_val2: str | None = None,
+    lower_is_better: bool = False,
 ) -> dbc.Card:
     winner_color = team_color
     loser_color = "#444"
 
-    c1 = winner_color if val1 >= val2 else loser_color
-    c2 = winner_color if val2 >= val1 else loser_color
+    d1_wins = (val1 <= val2) if lower_is_better else (val1 >= val2)
+    d2_wins = (val2 <= val1) if lower_is_better else (val2 >= val1)
+    c1 = winner_color if d1_wins else loser_color
+    c2 = winner_color if d2_wins else loser_color
 
-    total = val1 + val2
-    pct1 = (val1 / total * 100) if total else 50
+    # Bar always shows proportion where bigger = better visually
+    bar_v1 = (1 / val1) if (lower_is_better and val1) else val1
+    bar_v2 = (1 / val2) if (lower_is_better and val2) else val2
+    total = bar_v1 + bar_v2
+    pct1 = (bar_v1 / total * 100) if total else 50
     pct2 = 100 - pct1
 
     return dbc.Card(
@@ -44,7 +53,7 @@ def _h2h_stat_card(
                         dbc.Col(
                             [
                                 html.Div(d1, className="driver-code text-center", style={"color": c1}),
-                                html.Div(val1, className="h2h-score text-center"),
+                                html.Div(display_val1 or val1, className="h2h-score text-center"),
                             ]
                         ),
                         dbc.Col(
@@ -55,30 +64,17 @@ def _h2h_stat_card(
                         dbc.Col(
                             [
                                 html.Div(d2, className="driver-code text-center", style={"color": c2}),
-                                html.Div(val2, className="h2h-score text-center"),
+                                html.Div(display_val2 or val2, className="h2h-score text-center"),
                             ]
                         ),
                     ],
                     align="center",
                     className="my-2",
                 ),
-                # Proportional bar
                 html.Div(
                     [
-                        html.Div(
-                            style={
-                                "width": f"{pct1:.1f}%",
-                                "backgroundColor": team_color,
-                                "height": "100%",
-                            }
-                        ),
-                        html.Div(
-                            style={
-                                "width": f"{pct2:.1f}%",
-                                "backgroundColor": "#2a2a2a",
-                                "height": "100%",
-                            }
-                        ),
+                        html.Div(style={"width": f"{pct1:.1f}%", "backgroundColor": team_color, "height": "100%"}),
+                        html.Div(style={"width": f"{pct2:.1f}%", "backgroundColor": "#2a2a2a", "height": "100%"}),
                     ],
                     className="h2h-bar-wrap",
                 ),
@@ -141,7 +137,7 @@ def _quali_chart(
     d2_q: dict,
     team_color: str,
 ) -> go.Figure:
-    rounds = sorted(set(d1_q) & set(d2_q))
+    rounds = sorted(set(d1_q) | set(d2_q))
     if not rounds:
         return None
 
@@ -280,12 +276,44 @@ def update_h2h(team: str):
         d1_quali_wins = sum(1 for r in common_q if d1_q[r] < d2_q[r])
         d2_quali_wins = len(common_q) - d1_quali_wins
 
-    # ── Avg finish position
-    d1_avg = round(sum(v for v in d1_pos.values() if v) / max(len([v for v in d1_pos.values() if v]), 1), 1)
-    d2_avg = round(sum(v for v in d2_pos.values() if v) / max(len([v for v in d2_pos.values() if v]), 1), 1)
-    # For avg position, lower is better — invert comparison
-    d1_avg_inv = int(d2_avg * 10)
-    d2_avg_inv = int(d1_avg * 10)
+    # ── Avg finish position (lower is better)
+    d1_valid = [v for v in d1_pos.values() if v is not None]
+    d2_valid = [v for v in d2_pos.values() if v is not None]
+    d1_avg = round(sum(d1_valid) / len(d1_valid), 1) if d1_valid else 20.0
+    d2_avg = round(sum(d2_valid) / len(d2_valid), 1) if d2_valid else 20.0
+
+    # ── Headshots
+    img1 = get_driver_headshot(d1)
+    img2 = get_driver_headshot(d2)
+
+    def _driver_photo(code: str, img_url: str | None, color: str) -> html.Div:
+        photo = (
+            html.Img(
+                src=img_url,
+                style={
+                    "width": "90px",
+                    "height": "90px",
+                    "objectFit": "cover",
+                    "objectPosition": "top",
+                    "borderRadius": "50%",
+                    "border": f"3px solid {color}",
+                },
+            )
+            if img_url
+            else html.Div(
+                style={
+                    "width": "90px",
+                    "height": "90px",
+                    "borderRadius": "50%",
+                    "backgroundColor": "#2a2a2a",
+                    "border": f"3px solid {color}",
+                }
+            )
+        )
+        return html.Div(
+            [photo, html.Div(code, className="driver-code mt-2", style={"color": color})],
+            style={"textAlign": "center"},
+        )
 
     # ── Build charts
     race_fig = _positions_chart(d1, d2, d1_pos, d2_pos, team_color)
@@ -325,6 +353,23 @@ def update_h2h(team: str):
 
     return html.Div(
         [
+            # ── Driver photos banner
+            dbc.Row(
+                [
+                    dbc.Col(_driver_photo(d1, img1, team_color), width="auto"),
+                    dbc.Col(
+                        html.Div(
+                            "vs",
+                            style={"color": "#444", "fontSize": "1.2rem", "fontWeight": "700", "paddingTop": "28px"},
+                        ),
+                        width="auto",
+                    ),
+                    dbc.Col(_driver_photo(d2, img2, team_color), width="auto"),
+                ],
+                align="center",
+                justify="center",
+                className="mb-4 g-3",
+            ),
             # ── Stat summary cards
             dbc.Row(
                 [
@@ -342,22 +387,16 @@ def update_h2h(team: str):
                     ),
                     dbc.Col(
                         _h2h_stat_card(
-                            "Avg Finish (lower=better)",
-                            d1, d2, d1_avg_inv, d2_avg_inv, team_color,
+                            "Avg Finish",
+                            d1, d2, d1_avg, d2_avg, team_color,
+                            display_val1=f"P{d1_avg}",
+                            display_val2=f"P{d2_avg}",
+                            lower_is_better=True,
                         ),
                         md=3, xs=6, className="mb-3",
                     ),
                 ],
                 className="mb-2",
-            ),
-            # ── Avg position labels (human-readable)
-            dbc.Row(
-                dbc.Col(
-                    html.P(
-                        f"Average finish — {d1}: P{d1_avg}  ·  {d2}: P{d2_avg}",
-                        className="text-muted small mb-4",
-                    )
-                )
             ),
             # ── Charts
             dbc.Row(chart_cols),
