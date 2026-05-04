@@ -3,7 +3,7 @@ services:
     name: f1-dashboard
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:server --workers 2 --timeout 60
+    startCommand: gunicorn wsgi:application --workers 1 --timeout 120
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
