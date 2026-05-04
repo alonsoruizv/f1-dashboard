@@ -5,7 +5,10 @@ from dash import html
 app = dash.Dash(
     __name__,
     use_pages=True,
-    external_stylesheets=[dbc.themes.DARKLY],
+    external_stylesheets=[
+        dbc.themes.DARKLY,
+        "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css",
+    ],
     suppress_callback_exceptions=True,
     meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
 )
@@ -49,7 +52,10 @@ footer = html.Footer(
                 ),
                 dbc.Col(
                     html.A(
-                        "Alonso Ruiz Velasco",
+                        [
+                            html.I(className="bi bi-linkedin me-1", style={"color": "#0A66C2"}),
+                            "Alonso Ruiz Velasco",
+                        ],
                         href="https://www.linkedin.com/in/alonsoruizv/",
                         target="_blank",
                         style={"color": "#888", "fontSize": "0.8rem", "textDecoration": "none"},
