@@ -38,10 +38,38 @@ navbar = dbc.Navbar(
     className="main-navbar",
 )
 
+footer = html.Footer(
+    dbc.Container(
+        dbc.Row(
+            [
+                dbc.Col(
+                    html.Span("Built by ", style={"color": "#555", "fontSize": "0.8rem"}),
+                    width="auto",
+                    className="pe-0",
+                ),
+                dbc.Col(
+                    html.A(
+                        "Alonso Ruiz Velasco",
+                        href="https://www.linkedin.com/in/YOUR_LINKEDIN_HANDLE",
+                        target="_blank",
+                        style={"color": "#888", "fontSize": "0.8rem", "textDecoration": "none"},
+                    ),
+                    width="auto",
+                ),
+            ],
+            align="center",
+            className="py-3",
+        ),
+        fluid=True,
+    ),
+    style={"borderTop": "1px solid #1e1e1e", "marginTop": "32px"},
+)
+
 app.layout = html.Div(
     [
         navbar,
         dbc.Container(dash.page_container, fluid=True, className="page-content"),
+        footer,
     ]
 )
 
